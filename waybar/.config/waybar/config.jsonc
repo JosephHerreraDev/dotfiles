@@ -3,6 +3,8 @@
   "layer": "top",
   "position": "top",
   "margin-bottom": -10,
+  "margin-right": 4,
+  "margin-left": 4,
   "spacing" : 0,
 
   "modules-left": [

@@ -8,14 +8,14 @@
   "spacing" : 0,
 
   "modules-left": [
-    "hyprland/workspaces",
-    "cpu",
-    "memory"
+    "hyprland/workspaces"
   ],
 
   "modules-center": ["clock"],
 
   "modules-right": [
+    "cpu",
+    "memory",
     "privacy",
     "bluetooth",
     "network",

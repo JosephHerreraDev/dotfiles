@@ -159,7 +159,7 @@
 .widget-dnd {
   padding: 8px 14px; 
   border-radius: 12px;
-  margin: 5px 0;
+  margin: 10px 0;
   color: @text;
   background: @background-alt;
 }
@@ -187,11 +187,12 @@
   background: @hover;
 }
 
+
 .widget-mpris {
   background: @background-alt;
   border-radius: 15px;
   margin: 5px 0;
-  padding: 0 10px; 
+  padding: 0 30px; 
 }
 
 .mpris-overlay {
@@ -205,7 +206,6 @@
   padding: 10px 0 15px; 
 }
 
-/* Control buttons for mpris widget */
 .widget-mpris-player .image-button:hover {
   border-radius: 8px;
   background: @hover;
@@ -223,7 +223,7 @@
 }
 
 .widget-mpris-album-art {
-  border-radius: 16px;
+  border-radius: 5px;
 }
 
 .widget-mpris-title,

@@ -21,7 +21,7 @@
   "timeout-critical": 0,
   "fit-to-screen": true,
   "relative-timestamps": true,
-  "control-center-width": 100,
+  "control-center-width": 400,
   "control-center-height": 600,
   "notification-window-width": 600,
   "keyboard-shortcuts": true,
@@ -64,7 +64,8 @@
       "blacklist": [],
       "autohide": false,
       "show-album-art": "always",
-      "loop-carousel": true
+      "loop-carousel": true,
+      "image-size": 100
     }
   }
 }

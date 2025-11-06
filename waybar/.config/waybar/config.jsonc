@@ -119,7 +119,7 @@
 
   "custom/notification": {
     "tooltip": false,
-    "format": "{icon}",
+    "format": "{0} {icon}",
     "format-icons": {
       "notification": "󰂞",
       "none": "",

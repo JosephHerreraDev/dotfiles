@@ -1456,7 +1456,7 @@ include current-theme.conf
 
 #: The foreground and background colors.
 
-background_opacity 0.9
+ background_opacity 0.9
 
 #: The opacity of the background. A number between zero and one, where
 #: one is opaque and zero is fully transparent. This will only work if
@@ -2929,11 +2929,3 @@ background_opacity 0.9
 #: }}}
 
 #: }}}
-
-
-# BEGIN_KITTY_FONTS
-font_family      family="CaskaydiaCove Nerd Font"
-bold_font        auto
-italic_font      auto
-bold_italic_font auto
-# END_KITTY_FONTS

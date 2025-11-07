@@ -1,10 +1,16 @@
 # Hyprland configuration
 
-Components used:
-- hyprland
-- neovim
-- rofi
-- swaync
-- waybar
-- waypaper
-- zathura
+## Installation
+
+1. Clone & copy files directly into your config setup 
+2. Use `stow <component-name>`
+
+> [!WARNING]
+> This will override your current setup, backup as necessary.
+
+
+## Todo 
+
+- Configure Tmux.
+- Set a theme selector or switch color scheme after changing wallpaper.
+- Add a widget to view the current volume level.

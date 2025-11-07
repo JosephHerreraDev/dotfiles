@@ -22,27 +22,8 @@ if ! command -v yay &> /dev/null; then
   cd ..
 fi
 
-echo "[3/8] Installing Brave..."
-yay -Sy --noconfirm brave-bin
-
-echo "[4/8] Setting up wallpapers..."
-mkdir -p ~/Pictures
-cd ~/Pictures
-if [ ! -d "wallpapers" ]; then
-  git clone https://github.com/JosephHerreraDev/wallpapers.git
-fi
-yay -S --noconfirm waypaper
-
-# --- 5. Spotify + Spicetify ---
-echo "[5/8] Installing and configuring Spicetify..."
-yay -S --noconfirm spicetify-cli spicetify-themes-git
-spicetify backup apply enable-devtools
-spicetify config current_theme Sleek
-spicetify config color_scheme Nord
-spicetify apply
-
-# --- 6. SDDM Silent Theme ---
-echo "[6/8] Installing SDDM silent theme..."
+# --- 3. SDDM Silent Theme ---
+echo "[3/8] Installing SDDM silent theme..."
 yay -S --noconfirm sddm-silent-theme
 sudo tee /etc/sddm.conf > /dev/null <<EOF
 [General]
@@ -52,6 +33,27 @@ GreeterEnvironment=QML2_IMPORT_PATH=/usr/share/sddm/themes/silent/components/,QT
 [Theme]
 Current=silent
 EOF
+
+echo "[4/8] Installing Brave..."
+yay -Sy --noconfirm brave-bin
+
+echo "[5/8] Setting up wallpapers..."
+mkdir -p ~/Pictures
+cd ~/Pictures
+if [ ! -d "wallpapers" ]; then
+  git clone https://github.com/JosephHerreraDev/wallpapers.git
+fi
+yay -S --noconfirm waypaper
+
+# --- 6. Spotify + Spicetify ---
+echo "[6/8] Installing and configuring Spicetify..."
+yay -S --noconfirm spicetify-cli spicetify-themes-git
+spicetify
+spicetify backup apply enable-devtools
+spicetify config current_theme Sleek
+spicetify config color_scheme Nord
+spicetify apply
+
 
 # --- 7. Hyprshot ---
 echo "[7/8] Installing Hyprshot..."
@@ -67,4 +69,3 @@ for dir in */; do
 done
 
 echo "Setup complete. Dotfiles installed and linked."
-

@@ -2,8 +2,8 @@
 
 ## Installation
 
-1. Clone & copy files directly into your config setup 
-2. Use `stow <component-name>`
+1. Clone then copy files directly into your config setup 
+2. Clone then use `stow <component-name>`
 
 > [!WARNING]
 > This will override your current setup, backup as necessary.

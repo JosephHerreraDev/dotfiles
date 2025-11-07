@@ -4,12 +4,20 @@ set -e
 REPO_URL="https://github.com/JosephHerreraDev/dotfiles.git"
 DOTFILES_DIR="$HOME/dotfiles"
 
+# --- 0. Clone if missing ---
 if [ ! -d "$DOTFILES_DIR" ]; then
   echo "[0/8] Cloning dotfiles repository..."
   git clone "$REPO_URL" "$DOTFILES_DIR"
 fi
 
 cd "$DOTFILES_DIR"
+
+# --- 1. Base packages ---
+echo "[1/8] Installing base packages..."
+sudo pacman -Syu --noconfirm \
+  man-db nvim git base-devel ttf-cascadia-code-nerd \
+  spotify-launcher rofi starship swaync tmux waybar \
+  zathura zathura-pdf-poppler hyprpaper hyprlock yazi lazygit stow
 
 echo "[1/8] Ensuring base tools are installed..."
 sudo pacman -Syu --noconfirm git base-devel stow
@@ -22,7 +30,6 @@ if ! command -v yay &> /dev/null; then
   cd ..
 fi
 
-# --- 3. SDDM Silent Theme ---
 echo "[3/8] Installing SDDM silent theme..."
 yay -S --noconfirm sddm-silent-theme
 sudo tee /etc/sddm.conf > /dev/null <<EOF
@@ -45,7 +52,6 @@ if [ ! -d "wallpapers" ]; then
 fi
 yay -S --noconfirm waypaper
 
-# --- 6. Spotify + Spicetify ---
 echo "[6/8] Installing and configuring Spicetify..."
 yay -S --noconfirm spicetify-cli spicetify-themes-git
 spicetify
@@ -55,11 +61,9 @@ spicetify config color_scheme Nord
 spicetify apply
 
 
-# --- 7. Hyprshot ---
 echo "[7/8] Installing Hyprshot..."
 yay -S --noconfirm hyprshot
 
-# --- 8. Stow linking ---
 echo "[8/8] Linking dotfiles..."
 cd "$DOTFILES_DIR"
 for dir in */; do

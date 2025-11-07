@@ -17,7 +17,9 @@ echo "[1/8] Installing base packages..."
 sudo pacman -Syu --noconfirm \
   man-db nvim git base-devel ttf-cascadia-code-nerd \
   spotify-launcher rofi starship swaync tmux waybar \
-  zathura zathura-pdf-poppler hyprpaper hyprlock yazi lazygit stow
+  zathura zathura-pdf-poppler hyprpaper hyprlock yazi lazygit stow obsidian
+
+sudo pacman -Rns dolphin dunst wofi
 
 echo "[1/8] Ensuring base tools are installed..."
 sudo pacman -Syu --noconfirm git base-devel stow
@@ -52,24 +54,34 @@ if [ ! -d "wallpapers" ]; then
 fi
 yay -S --noconfirm waypaper
 
-echo "[6/8] Installing and configuring Spicetify..."
-yay -S --noconfirm spicetify-cli spicetify-themes-git
-spicetify
-spicetify backup apply enable-devtools
-spicetify config current_theme Sleek
-spicetify config color_scheme Nord
-spicetify apply
-
-
-echo "[7/8] Installing Hyprshot..."
+echo "[6/8] Installing Hyprshot..."
 yay -S --noconfirm hyprshot
 
-echo "[8/8] Linking dotfiles..."
-cd "$DOTFILES_DIR"
+# Causes problems when trying to apply
+
+# echo "[7/8] Installing and configuring Spicetify..."
+# yay -S --noconfirm spicetify-cli spicetify-themes-git
+# spicetify
+# spicetify backup apply enable-devtools
+# spicetify config current_theme Sleek
+# spicetify config color_scheme Nord
+# spicetify apply
+
+echo "[7/8] Backing up existing configs before linking..."
+BACKUP_DIR="$HOME/.config-backup-$(date +%Y%m%d%H%M%S)"
+mkdir -p "$BACKUP_DIR"
+
 for dir in */; do
-  if [ "$dir" != "yay/" ] && [ "$dir" != ".git/" ]; then
-    stow -v --target="$HOME" "$dir" || true
+  TARGET="$HOME/.config/${dir%/}"
+  if [ -d "$TARGET" ]; then
+    echo "  -> Moving existing $TARGET to $BACKUP_DIR/"
+    mv "$TARGET" "$BACKUP_DIR/"
   fi
+done
+
+echo "[8/8] Linking dotfiles..."
+for dir in */; do
+  stow -v --target="$HOME" "$dir" || true
 done
 
 echo "Setup complete. Dotfiles installed and linked."

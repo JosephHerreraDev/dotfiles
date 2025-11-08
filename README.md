@@ -11,6 +11,6 @@
 
 ## Todo 
 
-- Configure Tmux.
+- [x] Configure Tmux.
 - Set a theme selector or switch color scheme after changing wallpaper.
 - Add a widget to view the current volume level.

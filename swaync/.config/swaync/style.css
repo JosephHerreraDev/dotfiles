@@ -1,7 +1,10 @@
+/*
 @define-color background      rgba(46,52,64,0.9);
 @define-color text            #8fbcbb;
 @define-color text-alt        #d8dee9;
 @define-color background-alt  #0e0e14;
+*/
+@import url("theme.css");
 @define-color selected        alpha(@text-alt, .4);
 @define-color hover           alpha(@selected, .4);
 @define-color urgent          @text-alt;

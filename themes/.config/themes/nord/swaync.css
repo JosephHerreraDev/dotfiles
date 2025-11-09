@@ -1,4 +1,5 @@
 @define-color background      rgba(46,52,64,0.9);
-@define-color text            #8fbcbb;
-@define-color text-alt        #d8dee9;
-@define-color background-alt  #0e0e14;
+@define-color text            #8FBCBB;
+@define-color text-alt        #D8DEE9;
+@define-color background-alt  #0E0E14;
+@define-color border  #434C5E;

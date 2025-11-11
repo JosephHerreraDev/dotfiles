@@ -14,9 +14,9 @@
   "modules-center": ["clock"],
 
   "modules-right": [
+    "privacy",
     "cpu",
     "memory",
-    "privacy",
     "bluetooth",
     "network",
     "pulseaudio", 

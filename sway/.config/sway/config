@@ -7,24 +7,23 @@
 ### Variables
 #
 # Logo key. Use Mod1 for Alt.
-#set $mod Mod4 Windows
-set $mod Mod1
+set $mod Mod4
 # Home row direction keys, like vim
 set $left h
 set $down j
 set $up k
 set $right l
 # Your preferred terminal emulator
-#set $term foot default
+#set $term foot
 set $term kitty
 # Your preferred application launcher
-#set $menu wmenu-run default
-set $menu rofi
+#set $menu wmenu-run
+set $menu rofi -show drun
 
 ### Output configuration
 #
 # Default wallpaper (more resolutions are available in /usr/share/backgrounds/sway/)
-output * bg ~/Pictures/wallpapers/Nord/at_the_coffeshop.png fill
+output * bg /usr/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png fill
 # Font
 font pango: Meslo LGM Nerd Font 10
 # Border
@@ -35,7 +34,7 @@ gaps outer 5px
 #
 # Example configuration:
 #
-   output VGA-1 resolution 1920x1080 position 1920,0
+#   output HDMI-A-1 resolution 1920x1080 position 1920,0
 #
 # You can get the names of your outputs by running: swaymsg -t get_outputs
 
@@ -81,8 +80,7 @@ gaps outer 5px
     bindsym $mod+Shift+q kill
 
     # Start your launcher
-    #bindsym $mod+d exec $menu default
-    bindsym $mod+d exec $menu -show drun
+    bindsym $mod+d exec $menu
 
     # Drag floating windows by holding down $mod and left mouse button.
     # Resize them with right mouse button + $mod.
@@ -91,16 +89,11 @@ gaps outer 5px
     # mouse button for dragging.
     floating_modifier $mod normal
 
-    # Take screenshot 
-    bindsym $mod+Shift+s exec "grim"
-
-    # Log out
-    bindsym $mod+Shift+e exec "swaymsg exit"
     # Reload the configuration file
     bindsym $mod+Shift+c reload
 
     # Exit sway (logs you out of your Wayland session)
-    #bindsym $mod+Shift+e exec swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session.' -B 'Yes, exit sway' 'swaymsg exit'
+    bindsym $mod+Shift+e exec swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session.' -B 'Yes, exit sway' 'swaymsg exit'
 #
 # Moving around:
 #
@@ -231,19 +224,20 @@ bindsym $mod+r mode "resize"
 # Status Bar:
 #
 # Read `man 5 sway-bar` for more information about this section.
-#bar {
-    #position top
+bar {
+    position top
 
     # When the status_command prints a new line to stdout, swaybar updates.
     # The default just shows the current date and time.
-    #status_command while date +'%Y-%m-%d %X'; do sleep 1; done
+    status_command while date +'%Y-%m-%d %X'; do sleep 1; done
 
-    #colors {
-        #statusline #ffffff
-        #background #323232
-        #inactive_workspace #32323200 #32323200 #5c5c5c
-    #}
-#}
- exec waybar
+    colors {
+        statusline #ffffff
+        background #323232
+        inactive_workspace #32323200 #32323200 #5c5c5c
+    }
+}
+
+exec waybar
 
 include /etc/sway/config.d/*

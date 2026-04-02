@@ -8,7 +8,8 @@
   "spacing" : 0,
 
   "modules-left": [
-    "hyprland/workspaces"
+    "hyprland/workspaces",
+    "sway/workspaces"
   ],
 
   "modules-center": ["clock"],
@@ -51,7 +52,7 @@
 
   "cpu": {
     "interval": 5,
-    "format": " ",
+    "format": "",
     "on-click": "kitty -e btop"
   },
 

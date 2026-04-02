@@ -16,7 +16,6 @@
   "modules-right": [
     "privacy",
     "cpu",
-    "memory",
     "bluetooth",
     "network",
     "pulseaudio", 
@@ -26,31 +25,40 @@
   ],
 
   "hyprland/workspaces": {
-    "format": "{name}: {icon}",
+    "format": "{icon}",
     "format-icons": {
-      "active": "",
-      "default": ""
+      "default": "",
+      "1": "1",
+      "2": "2",
+      "3": "3",
+      "4": "4",
+      "5": "5",
+      "6": "6",
+      "7": "7",
+      "8": "8",
+      "9": "9",
+      "10": "0",
+      "active": ""
+    },
+    "persistent-workspaces": {
+      "1": [],
+      "2": [],
+      "3": [],
+      "4": [],
+      "5": []
     }
   },
 
   "cpu": {
-    "interval": 1,
-    "format": "  {icon0}{icon1}{icon2}{icon3} {usage:>2}%",
-    "format-icons": ["▁", "▂", "▃", "▄", "▅", "▆", "▇", "█"],
+    "interval": 5,
+    "format": " ",
     "on-click": "kitty -e btop"
   },
 
-  "memory": {
-    "interval": 30,
-    "format": "  {used:0.1f}G/{total:0.1f}G",
-    "tooltip-format": "Memory"
-  },
-
   "clock": {
-    "timezone": "Mexico/General",
+    "format": "{:L%A %H:%M}",
+    "format-alt": "{:L%d %B W%V %Y}",
     "tooltip": false,
-    "format": "{:%H:%M  ~  %A, %d}",
-    "interval": 1
   },
 
   "privacy": {

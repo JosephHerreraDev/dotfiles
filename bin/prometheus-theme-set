@@ -1,0 +1,61 @@
+#!/bin/bash
+
+if [[ -z $1 ]]; then
+  echo "Usage: prometheus-theme-set <theme-name>"
+  exit 1
+fi
+
+CURRENT_THEME_PATH="$HOME/.config/prometheus/current/theme"
+NEXT_THEME_PATH="$HOME/.config/prometheus/current/next-theme"
+USER_THEMES_PATH="$HOME/.config/prometheus/themes"
+PROMETHEUS_THEMES_PATH="$PROMETHEUS_PATH/themes"
+
+THEME_NAME=$(echo "$1" | sed -E 's/<[^>]+>//g' | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
+
+if [[ ! -d $PROMETHEUS_THEMES_PATH/$THEME_NAME ]] && [[ ! -d $USER_THEMES_PATH/$THEME_NAME ]]; then
+  echo "Theme '$THEME_NAME' does not exist"
+  exit 1
+fi
+
+# Setup clean next theme directory (for atomic theme config swapping)
+rm -rf "$NEXT_THEME_PATH"
+mkdir -p "$NEXT_THEME_PATH"
+
+# Copy official theme first, then overlay user customizations on top
+cp -r "$PROMETHEUS_THEMES_PATH/$THEME_NAME/"* "$NEXT_THEME_PATH/" 2>/dev/null
+cp -r "$USER_THEMES_PATH/$THEME_NAME/"* "$NEXT_THEME_PATH/" 2>/dev/null
+
+# Generate dynamic configs
+prometheus-theme-set-templates
+
+# Swap next theme in as current
+rm -rf "$CURRENT_THEME_PATH"
+mv "$NEXT_THEME_PATH" "$CURRENT_THEME_PATH"
+
+# Store theme name for reference
+echo "$THEME_NAME" >"$HOME/.config/prometheus/current/theme.name"
+
+# Change background with theme
+prometheus-theme-bg-next
+
+# Restart components to apply new theme
+if pgrep -x waybar >/dev/null; then
+  prometheus-restart-waybar
+fi
+#https://github.com/ErikReider/SwayOSD
+
+prometheus-restart-swayosd
+prometheus-restart-terminal
+prometheus-restart-hyprctl
+prometheus-restart-btop
+prometheus-restart-opencode
+prometheus-restart-mako
+
+# Change app-specific themes
+prometheus-theme-set-gnome
+prometheus-theme-set-browser
+prometheus-theme-set-vscode
+prometheus-theme-set-obsidian
+
+# Call hook on theme set
+prometheus-hook theme-set "$THEME_NAME"

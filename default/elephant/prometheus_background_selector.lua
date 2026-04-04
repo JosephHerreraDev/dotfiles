@@ -1,5 +1,5 @@
-Name = "omarchyBackgroundSelector"
-NamePretty = "Omarchy Background Selector"
+Name = "prometheusBackgroundSelector"
+NamePretty = "Prometheus Background Selector"
 Cache = false
 HideFromProviderlist = true
 SearchName = true

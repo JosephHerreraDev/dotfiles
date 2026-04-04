@@ -1,0 +1,269 @@
+#!/bin/bash
+
+# Launch the Prometheus Menu or takes a parameter to jump straight to a submenu.
+
+export PATH="$HOME/.local/share/prometheus/bin:$PATH"
+
+# Set to true when going directly to a submenu, so we can exit directly
+BACK_TO_EXIT=false
+
+back_to() {
+  local parent_menu="$1"
+
+  if [[ $BACK_TO_EXIT == "true" ]]; then
+    exit 0
+  elif [[ -n $parent_menu ]]; then
+    "$parent_menu"
+  else
+    show_main_menu
+  fi
+}
+
+toggle_existing_menu() {
+  if pgrep -f "walker.*--dmenu" >/dev/null; then
+    walker --close >/dev/null 2>&1
+    exit 0
+  fi
+}
+
+menu() {
+  local prompt="$1"
+  local options="$2"
+  local extra="$3"
+  local preselect="$4"
+
+  read -r -a args <<<"$extra"
+
+  if [[ -n $preselect ]]; then
+    local index
+    index=$(echo -e "$options" | grep -nxF "$preselect" | cut -d: -f1)
+    if [[ -n $index ]]; then
+      args+=("-c" "$index")
+    fi
+  fi
+
+  echo -e "$options" | prometheus-launch-walker --dmenu --width 295 --minheight 1 --maxheight 630 -p "$prompt…" "${args[@]}" 2>/dev/null
+}
+
+terminal() {
+  xdg-terminal-exec --app-id=org.prometheus.terminal "$@"
+}
+
+present_terminal() {
+  prometheus-launch-floating-terminal-with-presentation $1
+}
+
+open_in_editor() {
+  notify-send -u low "Editing config file" "$1"
+  prometheus-launch-editor "$1"
+}
+
+install() {
+  present_terminal "echo 'Installing $1...'; prometheus-pkg-add $2"
+}
+
+install_and_launch() {
+  present_terminal "echo 'Installing $1...'; prometheus-pkg-add $2 && setsid gtk-launch $3"
+}
+
+install_font() {
+  present_terminal "echo 'Installing $1...'; prometheus-pkg-add $2 && sleep 2 && prometheus-font-set '$3'"
+}
+
+install_terminal() {
+  present_terminal "prometheus-install-terminal $1"
+}
+
+aur_install() {
+  present_terminal "echo 'Installing $1 from AUR...'; prometheus-pkg-aur-add $2"
+}
+
+aur_install_and_launch() {
+  present_terminal "echo 'Installing $1 from AUR...'; prometheus-pkg-aur-add $2 && setsid gtk-launch $3"
+}
+
+show_trigger_menu() {
+  case $(menu "Trigger" "  Capture") in
+  *Capture*) show_capture_menu ;;
+  *) show_main_menu ;;
+  esac
+}
+
+show_capture_menu() {
+  case $(menu "Capture" "  Screenshot\n  Screenrecord\n󰃉  Color") in
+  *Screenshot*) prometheus-cmd-screenshot ;;
+  *Screenrecord*) show_screenrecord_menu ;;
+  *Color*) pkill hyprpicker || hyprpicker -a ;;
+  *) back_to show_trigger_menu ;;
+  esac
+}
+
+get_webcam_list() {
+  v4l2-ctl --list-devices 2>/dev/null | while IFS= read -r line; do
+    if [[ $line != $'\t'* && -n $line ]]; then
+      local name="$line"
+      IFS= read -r device || break
+      device=$(echo "$device" | tr -d '\t' | head -1)
+      [[ -n $device ]] && echo "$device  $name"
+    fi
+  done
+}
+
+show_webcam_select_menu() {
+  local devices=$(get_webcam_list)
+  local count=$(echo "$devices" | grep -c . 2>/dev/null || echo 0)
+
+  if [[ -z $devices ]] || ((count == 0)); then
+    notify-send "No webcam devices found" -u critical -t 3000
+    return 1
+  fi
+
+  if ((count == 1)); then
+    echo "$devices" | awk '{print $1}'
+  else
+    menu "Select Webcam" "$devices" | awk '{print $1}'
+  fi
+}
+
+show_screenrecord_menu() {
+  prometheus-cmd-screenrecord --stop-recording && exit 0
+
+  case $(menu "Screenrecord" "  With no audio\n  With desktop audio\n  With desktop + microphone audio\n  With desktop + microphone audio + webcam") in
+  *"With no audio") prometheus-cmd-screenrecord ;;
+  *"With desktop audio") prometheus-cmd-screenrecord --with-desktop-audio ;;
+  *"With desktop + microphone audio") prometheus-cmd-screenrecord --with-desktop-audio --with-microphone-audio ;;
+  *"With desktop + microphone audio + webcam")
+    local device=$(show_webcam_select_menu) || {
+      back_to show_capture_menu
+      return
+    }
+    prometheus-cmd-screenrecord --with-desktop-audio --with-microphone-audio --with-webcam --webcam-device="$device"
+    ;;
+  *) back_to show_capture_menu ;;
+  esac
+}
+
+show_style_menu() {
+  case $(menu "Style" "󰸌  Theme\n  Font\n  Background\n  Hyprland\n󱄄  Screensaver\n  About") in
+  *Theme*) show_theme_menu ;;
+  *Font*) show_font_menu ;;
+  *Background*) show_background_menu ;;
+  *Hyprland*) open_in_editor ~/.config/hypr/looknfeel.conf ;;
+  *Screensaver*) open_in_editor ~/.config/prometheus/branding/screensaver.txt ;;
+  *About*) open_in_editor ~/.config/prometheus/branding/about.txt ;;
+  *) show_main_menu ;;
+  esac
+}
+
+show_theme_menu() {
+  prometheus-launch-walker -m menus:prometheusthemes --width 800 --minheight 400
+}
+
+show_background_menu() {
+  prometheus-launch-walker -m menus:prometheusBackgroundSelector --width 800 --minheight 400
+}
+
+show_font_menu() {
+  theme=$(menu "Font" "$(prometheus-font-list)" "--width 350" "$(prometheus-font-current)")
+  if [[ $theme == "CNCLD" || -z $theme ]]; then
+    back_to show_style_menu
+  else
+    prometheus-font-set "$theme"
+  fi
+}
+
+show_setup_power_menu() {
+  profile=$(menu "Power Profile" "$(prometheus-powerprofiles-list)" "" "$(powerprofilesctl get)")
+
+  if [[ $profile == "CNCLD" || -z $profile ]]; then
+    back_to show_main_menu
+  else
+    powerprofilesctl set "$profile"
+  fi
+}
+
+show_install_menu() {
+  case $(menu "Install" "󰣇  Package\n󰣇  AUR\n  Style") in
+  *Package*) terminal prometheus-pkg-install ;;
+  *AUR*) terminal prometheus-pkg-aur-install ;;
+  *Style*) show_install_style_menu ;;
+  *) show_main_menu ;;
+  esac
+}
+
+
+show_install_style_menu() {
+  case $(menu "Install" "󰸌  Theme\n  Background\n  Font") in
+  *Theme*) present_terminal prometheus-theme-install ;;
+  *Background*) prometheus-theme-bg-install ;;
+  *Font*) show_install_font_menu ;;
+  *) show_install_menu ;;
+  esac
+}
+
+show_install_font_menu() {
+  case $(menu "Install" "  Cascadia Mono\n  Meslo LG Mono\n  Fira Code\n  Victor Code\n  Bistream Vera Mono\n  Iosevka" "--width 350") in
+  *Cascadia*) install_font "Cascadia Mono" "ttf-cascadia-mono-nerd" "CaskaydiaMono Nerd Font" ;;
+  *Meslo*) install_font "Meslo LG Mono" "ttf-meslo-nerd" "MesloLGL Nerd Font" ;;
+  *Fira*) install_font "Fira Code" "ttf-firacode-nerd" "FiraCode Nerd Font" ;;
+  *Victor*) install_font "Victor Code" "ttf-victor-mono-nerd" "VictorMono Nerd Font" ;;
+  *Bistream*) install_font "Bistream Vera Code" "ttf-bitstream-vera-mono-nerd" "BitstromWera Nerd Font" ;;
+  *Iosevka*) install_font "Iosevka" "ttf-iosevka-nerd" "Iosevka Nerd Font Mono" ;;
+  *) show_install_menu ;;
+  esac
+}
+
+show_about() {
+  prometheus-launch-about
+}
+
+show_system_menu() {
+  local options="󱄄  Screensaver\n  Lock"
+  [[ ! -f ~/.local/state/prometheus/toggles/suspend-off ]] && options="$options\n󰒲  Suspend"
+  prometheus-hibernation-available && options="$options\n󰤁  Hibernate"
+  options="$options\n󰍃  Logout\n󰜉  Restart\n󰐥  Shutdown"
+
+  case $(menu "System" "$options") in
+  *Screensaver*) prometheus-launch-screensaver force ;;
+  *Lock*) prometheus-lock-screen ;;
+  *Suspend*) systemctl suspend ;;
+  *Hibernate*) systemctl hibernate ;;
+  *Logout*) prometheus-system-logout ;;
+  *Restart*) prometheus-system-reboot ;;
+  *Shutdown*) prometheus-system-shutdown ;;
+  *) back_to show_main_menu ;;
+  esac
+}
+
+show_main_menu() {
+  go_to_menu "$(menu "Go" "󰀻  Apps\n󱓞  Trigger\n  Style\n󰉉  Install\n\  About\n  System")"
+}
+
+go_to_menu() {
+  case "${1,,}" in
+  *apps*) walker -p "Launch…" ;;
+  *trigger*) show_trigger_menu ;;
+  *background*) show_background_menu ;;
+  *capture*) show_capture_menu ;;
+  *style*) show_style_menu ;;
+  *theme*) show_theme_menu ;;
+  *screenrecord*) show_screenrecord_menu ;;
+  *power*) show_setup_power_menu ;;
+  *install*) show_install_menu ;;
+  *about*) show_about ;;
+  *system*) show_system_menu ;;
+  esac
+}
+
+# Allow user extensions and overrides
+USER_EXTENSIONS="$HOME/.config/prometheus/extensions/menu.sh"
+[[ -f $USER_EXTENSIONS ]] && source "$USER_EXTENSIONS"
+
+toggle_existing_menu
+
+if [[ -n $1 ]]; then
+  BACK_TO_EXIT=true
+  go_to_menu "$1"
+else
+  show_main_menu
+fi

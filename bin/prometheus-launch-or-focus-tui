@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# Launch or focus on a given TUI identified by the passed in as the command.
+# Use by commands like prometheus-launch-wifi to ensure there is only one wifi configuration screen open.
+
+APP_ID="org.prometheus.$(basename "$1")"
+LAUNCH_COMMAND="prometheus-launch-tui $@"
+
+exec prometheus-launch-or-focus "$APP_ID" "$LAUNCH_COMMAND"

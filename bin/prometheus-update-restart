@@ -1,0 +1,24 @@
+#!/bin/bash
+
+echo
+
+if [[ ! -d /usr/lib/modules/$(uname -r) ]]; then
+  gum confirm "Linux kernel has been updated. Reboot?" && prometheus-system-reboot
+elif [[ -f $HOME/.local/state/prometheus/reboot-required ]]; then
+  gum confirm "Updates require reboot. Ready?" && prometheus-system-reboot
+fi
+
+running_hyprland=$(readlink /proc/$(pgrep -x Hyprland)/exe 2>/dev/null)
+if [[ $running_hyprland == *"(deleted)"* ]]; then
+  gum confirm "Hyprland has been updated. Reboot?" && prometheus-system-reboot
+fi
+
+for file in "$HOME"/.local/state/prometheus/restart-*-required; do
+  if [[ -f $file ]]; then
+    filename=$(basename "$file")
+    service=$(echo "$filename" | sed 's/restart-\(.*\)-required/\1/')
+    echo "Restarting $service"
+    prometheus-state clear "$filename"
+    prometheus-restart-"$service"
+  fi
+done

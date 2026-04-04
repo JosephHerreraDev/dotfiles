@@ -21,7 +21,7 @@ run_logged $PROMETHEUS_INSTALL/config/fast-shutdown.sh
 run_logged $PROMETHEUS_INSTALL/config/unmount-fuse.sh
 # run_logged $PROMETHEUS_INSTALL/config/sudoless-asdcontrol.sh
 run_logged $PROMETHEUS_INSTALL/config/input-group.sh
-# run_logged $PROMETHEUS_INSTALL/config/omarchy-ai-skill.sh
+# run_logged $PROMETHEUS_INSTALL/config/prometheus-ai-skill.sh
 # run_logged $PROMETHEUS_INSTALL/config/kernel-modules-hook.sh
 run_logged $PROMETHEUS_INSTALL/config/powerprofilesctl-rules.sh
 run_logged $PROMETHEUS_INSTALL/config/wifi-powersave-rules.sh

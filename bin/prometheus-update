@@ -1,0 +1,11 @@
+#!/bin/bash
+
+set -e
+
+trap 'echo ""; echo -e "\033[0;31mSomething went wrong during the update!\n\nPlease review the output above carefully, correct the error, and retry the update.[0m"' ERR
+
+if [[ $1 == "-y" ]] || prometheus-update-confirm; then
+  prometheus-snapshot create || (($? == 127))
+  prometheus-update-git
+  prometheus-update-perform
+fi

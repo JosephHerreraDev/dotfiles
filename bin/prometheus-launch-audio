@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# Launch the Prometheus audio controls TUI (provided by wiremix).
+
+prometheus-launch-or-focus-tui wiremix

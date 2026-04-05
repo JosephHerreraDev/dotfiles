@@ -71,6 +71,7 @@ pamixer
 #pinta
 playerctl
 plocate
+plymouth
 #polkit-gnome
 power-profiles-daemon
 python-gobject
